@@ -1,16 +1,34 @@
 <script>
+  export let person;
+  export let dx;
 
-    export let person
-    export let dx
+  const offset = 30 * dx;
 
-    // console.log(person)
-
+  // console.log(person)
 </script>
 
 {#if person.susceptible == 1}
-    <circle cx={person.x * dx + 10} cy={person.y * dx + 10} r="5" stroke="black" stroke-width="1" fill="#ccffff" />    
+  <circle
+    cx={person.x * dx + offset}
+    cy={person.y * dx + offset}
+    r="2"
+    stroke="none"
+    fill="#ccccff"
+  />
 {:else if person.infected == 1}
-    <circle cx={person.x * dx + 10} cy={person.y * dx + 10} r="5" stroke="black" stroke-width="1" fill="red" />    
+  <circle
+    cx={person.x * dx + offset}
+    cy={person.y * dx + offset}
+    r="2"
+    stroke="none"
+    fill="red"
+  />
 {:else}
-    <circle cx={person.x * dx + 10} cy={person.y * dx + 10} r="5" stroke="black" stroke-width="1" fill="palegreen" />
+  <circle
+    cx={person.x * dx + offset}
+    cy={person.y * dx + offset}
+    r="2"
+    stroke="none"
+    fill="green"
+  />
 {/if}
