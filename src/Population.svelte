@@ -1,7 +1,6 @@
 <script>
   import Chart from "svelte-frappe-charts";
 
-  export let n;
   export let recoverAfterDays;
   export let maxMove;
 
