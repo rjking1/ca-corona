@@ -1,14 +1,18 @@
 <script>
   import Chart from "svelte-frappe-charts";
 
+  export let n;
   export let recoverAfterDays;
   export let maxMove;
+  export let vaccPerDay;
+  export let r;
 
   import Person from "./Person.svelte";
 
   let tot_pop = 0;
   let tot_inf = 0;
   let tot_rec = 0;
+  let tot_vacc = 0;
   let persons = new Map();
   let timerId;
   let data;
@@ -38,66 +42,21 @@
     return person;
   }
 
-  function decreaseInfected(person) {
-    if (person.infected == 1) {
-      person.daysInfected += 1;
-      if (person.daysInfected > recoverAfterDays) {
-        person.infected = 0;
-      }
-    }
-  }
-
-  function countInfectedNeighbours(person) {
-    const nbours = [
-      { x: -1, y: 0 },
-      { x: -1, y: -1 },
-      { x: 0, y: -1 },
-      { x: 1, y: -1 },
-      { x: 1, y: 0 },
-      { x: 1, y: 1 },
-      { x: 0, y: 1 },
-      { x: -1, y: 1 },
-    ];
-
-    if (person.infected) {
-      return person; // don't keep 2 neighbours infecting each other
-    }
-
-    // if prev infected then immune
-    if (!person.susceptible) {
-      return person;
-    }
-
-    let inf = 0;
-    nbours.forEach((offset) => {
-      if (persons.has(hash(person.x + offset.x, person.y + offset.y))) {
-        inf += persons.get(
-          hash(person.x + offset.x, person.y + offset.y)
-        ).infected;
-      }
-    });
-    if (inf == 0) {
-      return person;
-    }
-
-    let { ...person1 } = person;
-    person1.infected = 1;
-    person1.daysInfected = 0;
-    person1.susceptible = 0;
-    return person1;
-  }
-
   function updateCounts() {
     tot_pop = 0;
     tot_inf = 0;
     tot_rec = 0;
+    tot_vacc = 0;
     Array.from(persons.values()).forEach((person) => {
-      tot_pop += 1;
+      tot_pop++;
       if (person.infected == 1) {
-        tot_inf += 1;
+        tot_inf++;
       }
       if (person.susceptible == 0) {
-        tot_rec += 1;
+        tot_rec++;
+      }
+      if (person.vacc == 1) {
+        tot_vacc++;
       }
     });
     inf_hist.push(tot_inf);
@@ -118,6 +77,8 @@
         susceptible: inf > 0 ? 0 : 1,
         infected: inf-- > 0 ? 1 : 0,
         daysInfected: 0,
+        vacc: 0,
+        exposed: 0,
       };
       if (!persons.has(hash(person.x, person.y))) {
         persons.set(hash(person.x, person.y), person);
@@ -129,18 +90,60 @@
     persons = persons;
   }
 
+  function infectNeighbours(person, r) {
+    const nbours = [
+      { x: -1, y: 0 },
+      { x: -1, y: -1 },
+      { x: 0, y: -1 },
+      { x: 1, y: -1 },
+      { x: 1, y: 0 },
+      { x: 1, y: 1 },
+      { x: 0, y: 1 },
+      { x: -1, y: 1 },
+    ];
+    let rCount = 0;
+    nbours.forEach((offset) => {
+      if (persons.has(hash(person.x + offset.x, person.y + offset.y))) {
+        if (rCount++ <= r) {
+          persons.get(hash(person.x + offset.x, person.y + offset.y)).exposed++;
+        }
+      }
+    });
+  }
+
   export function tick() {
-    let persons1 = new Map();
     Array.from(persons.values()).forEach((person) => {
-      let person1 = countInfectedNeighbours(person);
+      person.exposed = 0;
+    });
+    Array.from(persons.values()).forEach((person) => {
+      if (person.infected == 1) {
+        infectNeighbours(person, r);
+      }
+    });
+
+    let new_persons = new Map();
+    let v = 0;
+    Array.from(persons.values()).forEach((person) => {
+      let person1 = { ...person }; // copy
+      if (person1.exposed > 0 && person1.vacc == 0) {
+        person1.infected = 1;
+        person1.daysInfected = 0;
+      }
+      if (person1.vacc == 0 && v++ <= vaccPerDay) {
+        person1.vacc = 1;
+      }
+      if (person1.infected == 1 && person1.daysInfected++ > recoverAfterDays) {
+        person1.infected = 0;
+        person1.susceptible = 0;
+      }
       if (Math.random() < 0.2) {
         move(person1, maxMove);
       }
-      decreaseInfected(person1);
-      persons1.set(hash(person1.x, person1.y), person1);
+      new_persons.set(hash(person1.x, person1.y), person1);
     });
+
     updateCounts();
-    persons = persons1;
+    persons = new_persons;
   }
 
   export function run() {
@@ -162,7 +165,10 @@
 
 <div class="flex-container">
   <div class="flex-item">
-    <div>Population: {tot_pop} Infected: {tot_inf} Recovered: {tot_rec}</div>
+    <div>
+      Population: {tot_pop} Infected: {tot_inf} Recovered: {tot_rec} Vaccinated:
+      {tot_vacc}
+    </div>
     <svg id="svg" height="1010px" width="1010px">
       {#each Array.from(persons.values()) as p}
         <Person person={p} />

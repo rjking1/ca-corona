@@ -8,21 +8,29 @@
   // console.log(person)
 </script>
 
-{#if person.susceptible == 1}
-  <circle
-    cx={person.x * dx + offset}
-    cy={person.y * dx + offset}
-    r="2"
-    stroke="none"
-    fill="#ccccff"
-  />
-{:else if person.infected == 1}
+{#if person.infected == 1}
   <circle
     cx={person.x * dx + offset}
     cy={person.y * dx + offset}
     r="2"
     stroke="none"
     fill="red"
+  />
+{:else if person.vacc == 1}
+  <circle
+    cx={person.x * dx + offset}
+    cy={person.y * dx + offset}
+    r="2"
+    stroke="none"
+    fill="blue"
+  />
+{:else if person.susceptible == 1}
+  <circle
+    cx={person.x * dx + offset}
+    cy={person.y * dx + offset}
+    r="2"
+    stroke="none"
+    fill="#ccccff"
   />
 {:else}
   <circle
