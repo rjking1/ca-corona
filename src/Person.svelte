@@ -1,7 +1,8 @@
 <script>
   export let person;
-  export let dx;
+  // export let dx;
 
+  const dx = 6;
   const offset = 30 * dx;
 
   // console.log(person)

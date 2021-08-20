@@ -24,8 +24,6 @@
     ],
   };
 
-  const dx = 6;
-
   function hash(x, y) {
     return x * 10000 + y;
   }
@@ -117,14 +115,10 @@
       let person = {
         x: Math.floor(Math.random() * x),
         y: Math.floor(Math.random() * y),
+        susceptible: inf > 0 ? 0 : 1,
         infected: inf-- > 0 ? 1 : 0,
         daysInfected: 0,
-        susceptible: 1,
       };
-      if (person.infected == 1) {
-        person.daysInfected = 0; //Math.floor(Math.random() * recoverAfterDays) + 1;
-        person.susceptible = 0;
-      }
       if (!persons.has(hash(person.x, person.y))) {
         persons.set(hash(person.x, person.y), person);
       }
@@ -171,7 +165,7 @@
     <div>Population: {tot_pop} Infected: {tot_inf} Recovered: {tot_rec}</div>
     <svg id="svg" height="1010px" width="1010px">
       {#each Array.from(persons.values()) as p}
-        <Person person={p} {dx} />
+        <Person person={p} />
       {/each}
     </svg>
   </div>
