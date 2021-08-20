@@ -27,7 +27,7 @@
 
   <button type="submit" on:click={() => p.init(n, 100, 100, i)}> Init </button>
 
-  <button type="submit" on:click={() => p.tick()}> Step </button>
+  <!-- <button type="submit" on:click={() => p.tick()}> Step </button> -->
 
   <button type="submit" on:click={() => p.run()}> Run </button>
 

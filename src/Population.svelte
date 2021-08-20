@@ -127,11 +127,17 @@
     let v = 0;
     Array.from(persons.values()).forEach((person) => {
       let person1 = { ...person }; // copy
-      if (person.infected == 1 && ++person1.daysInfected > recoverAfterDays) {// nasty -- must inc person1.daysInfected
+      if (person.infected == 1 && ++person1.daysInfected > recoverAfterDays) {
+        // nasty -- must inc person1.daysInfected
         person1.infected = 0;
         person1.susceptible = 0; // ie recovered
       }
-      if (person.susceptible == 1 && person.infected == 0 && person.exposed > 0 && person.vacc == 0) {
+      if (
+        person.susceptible == 1 &&
+        person.infected == 0 &&
+        person.exposed > 0 &&
+        person.vacc == 0
+      ) {
         person1.infected = 1;
         person1.daysInfected = 0;
       }
@@ -168,7 +174,7 @@
 <div class="flex-container">
   <div class="flex-item">
     <div>
-      Population: {tot_pop} Infected: {tot_inf} Recovered: {tot_rec} Vaccinated:
+      Infected: {tot_inf} Recovered: {tot_rec} Vaccinated:
       {tot_vacc}
     </div>
     <svg id="svg" height="1010px" width="1010px">
@@ -194,11 +200,9 @@
 
     padding: 0;
     margin: 0;
-    xlist-style: none;
   }
 
   .flex-item {
     width: 600px;
-    xheight: 150px;
   }
 </style>
