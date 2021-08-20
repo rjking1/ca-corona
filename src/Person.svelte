@@ -1,11 +1,8 @@
 <script>
   export let person;
-  // export let dx;
 
   const dx = 6;
   const offset = 30 * dx;
-
-  // console.log(person)
 </script>
 
 {#if person.infected == 1}
@@ -38,6 +35,6 @@
     cy={person.y * dx + offset}
     r="2"
     stroke="none"
-    fill="green"
+    fill="#44ff44"
   />
 {/if}

@@ -6,6 +6,7 @@
   export let maxMove;
   export let vaccPerDay;
   export let r;
+  export let age;
 
   import Person from "./Person.svelte";
 
@@ -78,6 +79,7 @@
         infected: inf-- > 0 ? 1 : 0,
         daysInfected: 0,
         vacc: 0,
+        age: Math.floor(Math.random() * 80),
         exposed: 0,
       };
       if (!persons.has(hash(person.x, person.y))) {
@@ -104,7 +106,7 @@
     let rCount = 0;
     nbours.forEach((offset) => {
       if (persons.has(hash(person.x + offset.x, person.y + offset.y))) {
-        if (rCount++ <= r) {
+        if (++rCount <= r) {
           persons.get(hash(person.x + offset.x, person.y + offset.y)).exposed++;
         }
       }
@@ -125,18 +127,18 @@
     let v = 0;
     Array.from(persons.values()).forEach((person) => {
       let person1 = { ...person }; // copy
-      if (person1.exposed > 0 && person1.vacc == 0) {
+      if (person.infected == 1 && ++person1.daysInfected > recoverAfterDays) {// nasty -- must inc person1.daysInfected
+        person1.infected = 0;
+        person1.susceptible = 0; // ie recovered
+      }
+      if (person.susceptible == 1 && person.infected == 0 && person.exposed > 0 && person.vacc == 0) {
         person1.infected = 1;
         person1.daysInfected = 0;
       }
-      if (person1.vacc == 0 && v++ <= vaccPerDay) {
+      if (person.vacc == 0 && person.age > age && ++v <= vaccPerDay) {
         person1.vacc = 1;
       }
-      if (person1.infected == 1 && person1.daysInfected++ > recoverAfterDays) {
-        person1.infected = 0;
-        person1.susceptible = 0;
-      }
-      if (Math.random() < 0.2) {
+      if (maxMove > 0 && Math.random() < 0.2) {
         move(person1, maxMove);
       }
       new_persons.set(hash(person1.x, person1.y), person1);

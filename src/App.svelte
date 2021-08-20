@@ -4,11 +4,12 @@
 
   let p;
   let n = 2000;
-  let i = 10;
+  let i = 1;
   let a = 10; // recover after days
-  let b = 0; // max move
+  let b = 6; // max move
   let r = 3;
-  let vr = 1; // vacc # / day
+  let vr = 0; // vacc # / day
+  let age = 70; // age for vacc
 </script>
 
 <div>
@@ -44,6 +45,10 @@
   Vacc rate (#/day):
   <input type="number" bind:value={vr} min="0" max="100" />
   <!-- <input type="range" bind:value={vr} min="0" max="1" /> -->
+
+  Vacc over age:
+  <input type="number" bind:value={age} min="0" max="100" />
+  <!-- <input type="range" bind:value={vr} min="0" max="1" /> -->
 </div>
 
 <Population
@@ -53,6 +58,7 @@
   maxMove={b}
   vaccPerDay={vr}
   {r}
+  {age}
 />
 
 <style>
