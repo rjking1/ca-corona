@@ -1,7 +1,6 @@
 <script>
   import Chart from "svelte-frappe-charts";
 
-  export let n;
   export let recoverAfterDays;
   export let maxMove;
   export let vaccPerDay;
@@ -71,19 +70,26 @@
       clearInterval(timerId);
     }
     persons.clear();
-    for (let i = 0; i < n; i++) {
-      let person = {
-        x: Math.floor(Math.random() * x),
-        y: Math.floor(Math.random() * y),
-        susceptible: inf > 0 ? 0 : 1,
-        infected: inf-- > 0 ? 1 : 0,
-        daysInfected: 0,
-        vacc: 0,
-        age: Math.floor(Math.random() * 80),
-        exposed: 0,
-      };
-      if (!persons.has(hash(person.x, person.y))) {
-        persons.set(hash(person.x, person.y), person);
+    let i = 0;
+    while (i < n) {
+      const xp = Math.random() * x;
+      const yp = Math.random() * y;
+      const z = (Math.sin(xp / 20 - 20) - Math.cos((yp / 10) * 1.3)) / 2.0; // -1.0 to 1.0
+      if (z > Math.random() - 0.5) {
+        let person = {
+          x: Math.floor(xp),
+          y: Math.floor(yp),
+          susceptible: inf > 0 ? 0 : 1,
+          infected: inf-- > 0 ? 1 : 0,
+          daysInfected: 0,
+          vacc: 0,
+          age: Math.floor(Math.random() * 80),
+          exposed: 0,
+        };
+        if (!persons.has(hash(person.x, person.y))) {
+          persons.set(hash(person.x, person.y), person);
+          i++;
+        }
       }
     }
     labels.length = 0;
@@ -174,7 +180,11 @@
 <div class="flex-container">
   <div class="flex-item">
     <div>
-      Infected: {tot_inf} Recovered: {tot_rec} Vaccinated:
+      <span style="color:red">Infected:</span>
+      {tot_inf}
+      <span style="color:#22cc22">Recovered:</span>
+      {tot_rec}
+      <span style="color:blue">Vaccinated:</span>
       {tot_vacc}
     </div>
     <svg id="svg" height="1010px" width="1010px">

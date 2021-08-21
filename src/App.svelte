@@ -4,9 +4,9 @@
 
   let p;
   let n = 2000;
-  let i = 1;
+  let i = 1; // init infected
   let a = 10; // recover after days
-  let b = 6; // max move
+  let b = 5; // max move
   let r = 3;
   let vr = 0; // vacc # / day
   let age = 70; // age for vacc
@@ -22,7 +22,7 @@
   <!-- <input type="range" bind:value={i} min="1" max="500" /> -->
 
   R:
-  <input type="number" bind:value={r} min="0" max="6" />
+  <input type="number" bind:value={r} min="1" max="6" />
   <!-- <input type="range" bind:value={r} min="0" max="6" /> -->
 
   <button type="submit" on:click={() => p.init(n, 100, 100, i)}> Init </button>
@@ -39,7 +39,7 @@
   <!-- <input type="range" bind:value={a} min="1" max="20" /> -->
 
   Max Movement:
-  <input type="number" bind:value={b} min="0" max="20" />
+  <input type="number" bind:value={b} min="1" max="10" />
   <!-- <input type="range" bind:value={b} min="0" max="20" /> -->
 
   Vacc rate (#/day):
@@ -53,7 +53,6 @@
 
 <Population
   bind:this={p}
-  {n}
   recoverAfterDays={a}
   maxMove={b}
   vaccPerDay={vr}

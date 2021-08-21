@@ -35,6 +35,6 @@
     cy={person.y * dx + offset}
     r="2"
     stroke="none"
-    fill="#44ff44"
+    fill="#22cc22"
   />
 {/if}
