@@ -25,10 +25,12 @@
       animations: {
         enabled: false,
       },
-      export: {
-        csv: {
-          filename: "ca-corona.csv",
-          headerCategory: "day",
+      toolbar: {
+        export: {
+          csv: {
+            filename: "ca-corona",
+            headerCategory: "day",
+          },
         },
       },
     },
