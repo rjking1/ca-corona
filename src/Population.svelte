@@ -15,17 +15,27 @@
   let tot_vacc = 0;
   let persons = new Map();
   let timerId;
-  let data;
   let labels = [];
   let inf_hist = [];
+  let inf_growth = [];
 
-  data = {
+  $: data1 = {
     labels: labels,
     datasets: [
       {
         values: inf_hist,
       },
     ],
+  };
+
+  $: data2 = {
+    labels: labels,
+    datasets: [
+      {
+        values: inf_growth,
+      },
+    ],
+    colors: ["red"]
   };
 
   function hash(x, y) {
@@ -44,6 +54,7 @@
 
   function updateCounts() {
     tot_pop = 0;
+    let prev_inf = tot_inf;
     tot_inf = 0;
     tot_rec = 0;
     tot_vacc = 0;
@@ -60,9 +71,12 @@
       }
     });
     inf_hist.push(tot_inf);
+    const rEff = prev_inf != 0 ? tot_inf / prev_inf : 1;
+    inf_growth.push(rEff);
     labels.push(inf_hist.length); // label is # days
 
-    data = data;
+    data1 = data1;
+    data2 = data2;
   }
 
   export function init(n, x, y, inf) {
@@ -94,6 +108,7 @@
     }
     labels.length = 0;
     inf_hist.length = 0;
+    inf_growth.length = 0;
     updateCounts();
     persons = persons;
   }
@@ -156,8 +171,8 @@
       new_persons.set(hash(person1.x, person1.y), person1);
     });
 
-    updateCounts();
     persons = new_persons;
+    updateCounts();
   }
 
   export function run() {
@@ -194,9 +209,8 @@
     </svg>
   </div>
   <div class="flex-item">
-    {#if true}
-      <Chart {data} type="bar" />
-    {/if}
+    <Chart data={data1} title = "Infected" type = "bar" />
+    <Chart data={data2} title = "Infected growth (R eff)" type = "line" />
   </div>
 </div>
 

@@ -1,6 +1,5 @@
 <script>
   import Population from "./Population.svelte";
-  //import AChart from "./AChart.svelte"
 
   let p;
   let n = 2000;
@@ -27,7 +26,7 @@
 
   <button type="submit" on:click={() => p.init(n, 100, 100, i)}> Init </button>
 
-  <!-- <button type="submit" on:click={() => p.tick()}> Step </button> -->
+  <button type="submit" on:click={() => p.tick()}> Step </button>
 
   <button type="submit" on:click={() => p.run()}> Run </button>
 
