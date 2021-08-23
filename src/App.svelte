@@ -2,7 +2,7 @@
   import Population from "./Population.svelte";
 
   let p;
-  let n = 2000;
+  let n = 3000;
   let i = 1; // init infected
   let a = 10; // recover after days
   let b = 5; // max move

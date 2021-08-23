@@ -1,5 +1,5 @@
 <script>
-  import Chart from "svelte-frappe-charts";
+  import { chart } from "svelte-apexcharts";
 
   export let recoverAfterDays;
   export let maxMove;
@@ -13,29 +13,57 @@
   let tot_inf = 0;
   let tot_rec = 0;
   let tot_vacc = 0;
+  let rEff = 1;
   let persons = new Map();
   let timerId;
   let labels = [];
   let inf_hist = [];
   let inf_growth = [];
 
-  $: data1 = {
-    labels: labels,
-    datasets: [
+  $: chart_options = {
+    chart: {
+      animations: {
+        enabled: false,
+      },
+      export: {
+        csv: {
+          filename: "ca-corona.csv",
+          headerCategory: "day",
+        },
+      },
+    },
+    colors: ["#247BA0", "#FF1654"],
+    //dataLabels: { position: "top", enabled: false, offsetY: 0 },
+    series: [
       {
-        values: inf_hist,
+        name: "infected",
+        type: "column",
+        data: inf_hist,
+      },
+      {
+        name: "R eff",
+        type: "line",
+        data: inf_growth,
       },
     ],
-  };
-
-  $: data2 = {
-    labels: labels,
-    datasets: [
+    xaxis: {
+      categories: labels,
+    },
+    yaxis: [
       {
-        values: inf_growth,
+        decimalsInFloat: 0,
+        title: {
+          text: "infected",
+        },
+      },
+      {
+        opposite: true,
+        decimalsInFloat: 2,
+        title: {
+          text: "R eff",
+        },
       },
     ],
-    colors: ["red"]
   };
 
   function hash(x, y) {
@@ -71,12 +99,11 @@
       }
     });
     inf_hist.push(tot_inf);
-    const rEff = prev_inf != 0 ? tot_inf / prev_inf : 1;
+    rEff = prev_inf != 0 ? tot_inf / prev_inf : 1;
     inf_growth.push(rEff);
     labels.push(inf_hist.length); // label is # days
 
-    data1 = data1;
-    data2 = data2;
+    chart_options = chart_options;
   }
 
   export function init(n, x, y, inf) {
@@ -165,7 +192,7 @@
       if (person.vacc == 0 && person.age > age && ++v <= vaccPerDay) {
         person1.vacc = 1;
       }
-      if (maxMove > 0 && Math.random() < 0.2) {
+      if (maxMove > 0 && Math.random() < 0.5) {
         move(person1, maxMove);
       }
       new_persons.set(hash(person1.x, person1.y), person1);
@@ -201,6 +228,10 @@
       {tot_rec}
       <span style="color:blue">Vaccinated:</span>
       {tot_vacc}
+      <span style="color:red"
+        >R eff:
+        {rEff.toFixed(2)}</span
+      >
     </div>
     <svg id="svg" height="1010px" width="1010px">
       {#each Array.from(persons.values()) as p}
@@ -209,8 +240,7 @@
     </svg>
   </div>
   <div class="flex-item">
-    <Chart data={data1} title = "Infected" type = "bar" />
-    <Chart data={data2} title = "Infected growth (R eff)" type = "line" />
+    <div use:chart={chart_options} />
   </div>
 </div>
 
