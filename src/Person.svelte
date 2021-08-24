@@ -1,15 +1,16 @@
 <script>
   export let person;
 
-  const dx = 6;
-  const offset = 30 * dx;
+  const dx = 3.5;
+  const rad = 1.5;
+  const offset = 20 * dx;
 </script>
 
 {#if person.infected == 1}
   <circle
     cx={person.x * dx + offset}
     cy={person.y * dx + offset}
-    r="2"
+    r={rad}
     stroke="none"
     fill="red"
   />
@@ -17,7 +18,7 @@
   <circle
     cx={person.x * dx + offset}
     cy={person.y * dx + offset}
-    r="2"
+    r={rad}
     stroke="none"
     fill="blue"
   />
@@ -25,7 +26,7 @@
   <circle
     cx={person.x * dx + offset}
     cy={person.y * dx + offset}
-    r="2"
+    r={rad}
     stroke="none"
     fill="#ccccff"
   />
@@ -33,7 +34,7 @@
   <circle
     cx={person.x * dx + offset}
     cy={person.y * dx + offset}
-    r="2"
+    r={rad}
     stroke="none"
     fill="#22cc22"
   />

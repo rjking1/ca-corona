@@ -7,7 +7,7 @@
   export let maxMove;
   export let vaccPerDay;
   export let r;
-  export let age;
+  export let seed;
 
   let tot_pop = 0;
   let tot_inf = 0;
@@ -20,7 +20,7 @@
   let inf_hist = [];
   let inf_growth = [];
 
-  const { random } = mkAlea("seed");
+  const { random } = mkAlea(seed);
 
   $: chart_options = {
     chart: {
@@ -102,8 +102,8 @@
       }
     });
     inf_hist.push(tot_inf);
-    if (inf_hist.length > recoverAfterDays) {
-      rEff = tot_inf / inf_hist[inf_hist.length - recoverAfterDays];
+    if (inf_hist.length >= recoverAfterDays) {
+      rEff = tot_inf / inf_hist[inf_hist.length - recoverAfterDays + 1];
     } else {
       rEff = 0;
     }
@@ -122,7 +122,7 @@
     while (i < n) {
       const xp = random() * x;
       const yp = random() * y;
-      const z = (Math.sin(xp / 20 - 20) - Math.cos((yp / 10) * 1.3)) / 2.0; // -1.0 to 1.0
+      const z = (Math.sin(xp / 40 - 20) - Math.cos((yp / 25) * 1.4)) / 2.0; // -1.0 to 1.0
       if (z > random() - 0.5) {
         let person = {
           x: Math.floor(xp),
@@ -131,7 +131,6 @@
           infected: inf-- > 0 ? 1 : 0,
           daysInfected: 0,
           vacc: 0,
-          age: Math.floor(random() * 80),
           exposed: 0,
         };
         if (!persons.has(hash(person.x, person.y))) {
@@ -196,11 +195,13 @@
         person1.infected = 1;
         person1.daysInfected = 0;
       }
-      if (person.vacc == 0 && person.age > age && ++v <= vaccPerDay) {
+      if (person.vacc == 0 && ++v <= vaccPerDay) {
         person1.vacc = 1;
       }
-      if (maxMove > 0 && random() < 0.5) {
+      if (person1.infected == 0) {
         move(person1, maxMove);
+      } else if (person1.daysInfected < 1 || random() < 0.05) {
+        move(person1, maxMove); // infected can move for first day or 5% chance they move while infected after day 1
       }
       new_persons.set(hash(person1.x, person1.y), person1);
     });
