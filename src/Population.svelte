@@ -1,13 +1,13 @@
 <script>
   import { chart } from "svelte-apexcharts";
+  import { mkAlea } from "@spissvinkel/alea";
+  import Person from "./Person.svelte";
 
   export let recoverAfterDays;
   export let maxMove;
   export let vaccPerDay;
   export let r;
   export let age;
-
-  import Person from "./Person.svelte";
 
   let tot_pop = 0;
   let tot_inf = 0;
@@ -19,6 +19,8 @@
   let labels = [];
   let inf_hist = [];
   let inf_growth = [];
+
+  const { random } = mkAlea("seed");
 
   $: chart_options = {
     chart: {
@@ -73,8 +75,8 @@
   }
 
   function move(person, dist) {
-    const offset_x = (Math.round(Math.random() * 2.0) - 1.0) * dist;
-    const offset_y = (Math.round(Math.random() * 2.0) - 1.0) * dist;
+    const offset_x = (Math.round(random() * 2.0) - 1.0) * dist;
+    const offset_y = (Math.round(random() * 2.0) - 1.0) * dist;
     if (!persons.has(hash(person.x + offset_x, person.y + offset_y))) {
       person.x += offset_x;
       person.y += offset_y;
@@ -84,7 +86,6 @@
 
   function updateCounts() {
     tot_pop = 0;
-    let prev_inf = tot_inf;
     tot_inf = 0;
     tot_rec = 0;
     tot_vacc = 0;
@@ -101,7 +102,11 @@
       }
     });
     inf_hist.push(tot_inf);
-    rEff = prev_inf != 0 ? tot_inf / prev_inf : 1;
+    if (inf_hist.length > recoverAfterDays) {
+      rEff = tot_inf / inf_hist[inf_hist.length - recoverAfterDays];
+    } else {
+      rEff = 0;
+    }
     inf_growth.push(rEff);
     labels.push(inf_hist.length); // label is # days
 
@@ -115,10 +120,10 @@
     persons.clear();
     let i = 0;
     while (i < n) {
-      const xp = Math.random() * x;
-      const yp = Math.random() * y;
+      const xp = random() * x;
+      const yp = random() * y;
       const z = (Math.sin(xp / 20 - 20) - Math.cos((yp / 10) * 1.3)) / 2.0; // -1.0 to 1.0
-      if (z > Math.random() - 0.5) {
+      if (z > random() - 0.5) {
         let person = {
           x: Math.floor(xp),
           y: Math.floor(yp),
@@ -126,7 +131,7 @@
           infected: inf-- > 0 ? 1 : 0,
           daysInfected: 0,
           vacc: 0,
-          age: Math.floor(Math.random() * 80),
+          age: Math.floor(random() * 80),
           exposed: 0,
         };
         if (!persons.has(hash(person.x, person.y))) {
@@ -194,7 +199,7 @@
       if (person.vacc == 0 && person.age > age && ++v <= vaccPerDay) {
         person1.vacc = 1;
       }
-      if (maxMove > 0 && Math.random() < 0.5) {
+      if (maxMove > 0 && random() < 0.5) {
         move(person1, maxMove);
       }
       new_persons.set(hash(person1.x, person1.y), person1);

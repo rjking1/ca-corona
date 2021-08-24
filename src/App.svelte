@@ -4,7 +4,7 @@
   let p;
   let n = 3000;
   let i = 1; // init infected
-  let a = 10; // recover after days
+  let a = 7; // recover after days = days infectious
   let b = 5; // max move
   let r = 3;
   let vr = 0; // vacc # / day
@@ -20,7 +20,7 @@
   <input type="number" bind:value={i} min="1" max="500" />
   <!-- <input type="range" bind:value={i} min="1" max="500" /> -->
 
-  R:
+  Infect neighbours:
   <input type="number" bind:value={r} min="1" max="6" />
   <!-- <input type="range" bind:value={r} min="0" max="6" /> -->
 
